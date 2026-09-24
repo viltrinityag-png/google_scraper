@@ -317,7 +317,19 @@ Or download the [binary release](https://github.com/gosom/google-maps-scraper/re
 > 
 > **macOS Users:** Docker command may not work. See [MacOS Instructions](MacOS%20instructions.md).
 
-### REST API
+### Universal AI Lead Search API
+
+This fork also exposes an agent-friendly endpoint for natural-language lead workflows through an OpenAPI integration.
+
+Examples:
+
+> Find 50 dentists in Harare with websites and emails.
+
+> Find 30 plumbers in Johannesburg.
+
+Run the included Docker Compose deployment and see [docs/lead-api.md](docs/lead-api.md). The OpenAPI definition is [api/docs/lead-search.yaml](api/docs/lead-search.yaml).
+
+## REST API
 
 When running the web server, a full REST API is available:
 
