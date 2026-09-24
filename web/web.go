@@ -112,6 +112,18 @@ func New(svc *Service, addr string) (*Server, error) {
 		}
 	})
 
+	// Convenience API for AI agents and simple integrations.
+	leadSearchHandler := leadAPIKeyMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ans.apiLeadSearch(w, r)
+	}))
+	mux.Handle("/api/v1/lead-search", leadSearchHandler)
+
+	leadSearchResultHandler := leadAPIKeyMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		r = requestWithID(r)
+		ans.apiLeadSearchResult(w, r)
+	}))
+	mux.Handle("/api/v1/lead-search/{id}", leadSearchResultHandler)
+
 	mux.HandleFunc("/api/v1/jobs/{id}/download", func(w http.ResponseWriter, r *http.Request) {
 		r = requestWithID(r)
 
