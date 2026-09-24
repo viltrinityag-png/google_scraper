@@ -77,7 +77,7 @@ func New(svc *Service, addr string) (*Server, error) {
 	mux.HandleFunc("/", ans.index)
 
 	// api routes
-	mux.Handle("/api/v1/health", leadAPIKeyMiddleware(http.HandlerFunc(ans.leadAPIHealth)))
+	mux.Handle("/api/v1/health", http.HandlerFunc(ans.leadAPIHealth))
 	mux.Handle("/api/v1/lead-search", leadAPIKeyMiddleware(http.HandlerFunc(ans.apiLeadSearch)))
 	mux.Handle("/api/v1/lead-search/{id}", leadAPIKeyMiddleware(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		r = requestWithID(r)
