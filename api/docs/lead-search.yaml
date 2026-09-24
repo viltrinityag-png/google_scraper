@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: Google Maps Universal Lead Search API
+  version: 1.0.0
+  description: Search Google Maps for any business type in any location and return structured leads.
+servers:
+  - url: https://YOUR-SCRAPER-DOMAIN
+security:
+  - bearerAuth: []
+paths:
+  /api/v1/lead-search:
+    post:
+      operationId: createLeadSearch
+      summary: Start a universal business lead search
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LeadSearchRequest'
+      responses:
+        '202':
+          description: Search started
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadSearchCreated'
+        '400':
+          description: Invalid request
+        '401':
+          description: Invalid API key
+  /api/v1/lead-search/{id}:
+    get:
+      operationId: getLeadSearchResults
+      summary: Get search status and leads
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: {type: string}
+        - name: limit
+          in: query
+          schema: {type: integer, minimum: 1, maximum: 200, default: 25}
+      responses:
+        '200':
+          description: Search status/results
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LeadSearchResult'
+        '401':
+          description: Invalid API key
+        '404':
+          description: Search not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+  schemas:
+    LeadSearchRequest:
+      type: object
+      required: [business, location]
+      properties:
+        business: {type: string, example: dentists}
+        location: {type: string, example: Harare, Zimbabwe}
+        limit: {type: integer, minimum: 1, maximum: 200, default: 25}
+        email: {type: boolean, default: false}
+        fast_mode: {type: boolean, default: false}
+        depth: {type: integer, minimum: 1, maximum: 100, default: 3}
+        radius: {type: integer, minimum: 1, default: 10000, description: Search radius in meters}
+        lang: {type: string, default: en}
+        zoom: {type: integer, minimum: 1, maximum: 21}
+        geo_coordinates: {type: string, example: "-17.8252,31.0335"}
+        max_time: {type: integer, minimum: 30, maximum: 900, default: 300}
+    LeadSearchCreated:
+      type: object
+      properties:
+        id: {type: string}
+        status: {type: string}
+        search: {type: string}
+        result_url: {type: string}
+    LeadSearchResult:
+      type: object
+      properties:
+        id: {type: string}
+        status: {type: string, enum: [pending, working, ok, failed]}
+        search: {type: string}
+        count: {type: integer}
+        requested: {type: integer}
+        error: {type: string}
+        results:
+          type: array
+          items:
+            type: object
+            additionalProperties: {type: string}
