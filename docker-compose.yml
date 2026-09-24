@@ -1,0 +1,21 @@
+services:
+  lead-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: google-scraper-lead-api:local
+    restart: unless-stopped
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      LEAD_API_KEY: ${LEAD_API_KEY}
+      PUBLIC_BASE_URL: ${PUBLIC_BASE_URL:-http://localhost:8080}
+    command:
+      - -data-folder
+      - /gmapsdata
+      - -addr
+      - :8080
+    volumes:
+      - ./gmapsdata:/gmapsdata
