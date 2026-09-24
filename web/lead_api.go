@@ -65,6 +65,14 @@ func leadAPIKeyMiddleware(next http.Handler) http.Handler {
 	})
 }
 
+func (s *Server) leadAPIHealth(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodGet {
+		renderJSON(w, http.StatusMethodNotAllowed, apiError{Code: http.StatusMethodNotAllowed, Message: methodNotAllowedMessage})
+		return
+	}
+	renderJSON(w, http.StatusOK, map[string]string{"status": "ok", "service": "google-maps-lead-search"})
+}
+
 func (s *Server) apiLeadSearch(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		renderJSON(w, http.StatusMethodNotAllowed, apiError{Code: http.StatusMethodNotAllowed, Message: methodNotAllowedMessage})
@@ -171,7 +179,7 @@ func (s *Server) apiLeadSearch(w http.ResponseWriter, r *http.Request) {
 
 	renderJSON(w, http.StatusAccepted, leadSearchCreated{
 		ID: job.ID, Status: job.Status, Search: search,
-		ResultURL: "/api/v1/lead-search/" + job.ID + "?limit=" + strconv.Itoa(req.Limit),
+		ResultURL: leadAPIURL(r, "/api/v1/lead-search/"+job.ID+"?limit="+strconv.Itoa(req.Limit)),
 	})
 }
 
@@ -265,4 +273,13 @@ func readLeadCSV(path string, limit int) ([]map[string]string, error) {
 		results = append(results, item)
 	}
 	return results, nil
+}
+
+
+func leadAPIURL(r *http.Request, path string) string {
+	base := strings.TrimRight(strings.TrimSpace(os.Getenv("PUBLIC_BASE_URL")), "/")
+	if base != "" {
+		return base + path
+	}
+	return path
 }
