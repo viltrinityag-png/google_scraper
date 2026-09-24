@@ -8,6 +8,21 @@ servers:
 security:
   - bearerAuth: []
 paths:
+  /api/v1/health:
+    get:
+      operationId: leadApiHealth
+      summary: Check that the lead search API is running
+      security: []
+      responses:
+        '200':
+          description: API is healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status: {type: string, example: ok}
+                  service: {type: string, example: google-maps-lead-search}
   /api/v1/lead-search:
     post:
       operationId: createLeadSearch
